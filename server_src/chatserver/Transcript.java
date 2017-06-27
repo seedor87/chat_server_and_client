@@ -7,15 +7,6 @@ import java.util.List;
 
 public class Transcript {
 
-    private class Message {
-
-        private String body;
-
-        public Message(String body) { this.body = body; }
-
-        public String getBody() { return this.body; }
-    }
-
     private List<Message> transcript = Collections.synchronizedList(new ArrayList<Message>());
     
     public Transcript() {
@@ -27,4 +18,12 @@ public class Transcript {
     public int getSize() { return transcript.size(); }
 
     public String getComment(int n) { return transcript.get(n).getBody(); }
+
+    public String toString() {
+        String ret = "";
+        for (Message comment: transcript) {
+            ret += comment.toString() + "\n";
+        }
+        return ret;
+    }
 }

@@ -12,9 +12,7 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.URL;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.ResourceBundle;
+import java.util.*;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -31,11 +29,13 @@ public class FXMLDocumentController implements Initializable {
     private TextArea textArea;
     
     private int clientNo = 0;
-    private Transcript transcript;
-    
+    private TranscriptMap transcriptMap;
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        transcript = new Transcript();
+
+        transcriptMap = new TranscriptMap(); // Init transcriptMap to hold the state of each forum's transcript as it was left
+
         this.textArea.setEditable(false);
 
         Platform.runLater( () -> {
@@ -61,15 +61,14 @@ public class FXMLDocumentController implements Initializable {
             });
           
           // Create and start a new thread for the connection
-          new Thread(new HandleAClient(socket,transcript,textArea, clientNo)).start();
+          new Thread(new HandleAClient(socket,textArea, clientNo)).start();
         }
       }
       catch(IOException ex) {
         ex.printStackTrace();
       }
     }).start();
-    }    
-    
+    }
 }
 
 class HandleAClient implements Runnable, chat.ChatConstants {
@@ -80,15 +79,19 @@ class HandleAClient implements Runnable, chat.ChatConstants {
     private String handle;
     private HashMap<String, String> forum;
     private int clientNo;
-    private boolean logged_in;
 
-    public HandleAClient(Socket socket,Transcript transcript,TextArea textArea, int clientNo) {
+    private enum connection_code {
+        CRED_FAIL, FORUM_FAIL, SUCCESS
+    }
+    private connection_code logged_in;
+
+    public HandleAClient(Socket socket, TextArea textArea, int clientNo) {
 
         this.socket = socket;
-        this.transcript = transcript;
         this.textArea = textArea;
         this.clientNo = clientNo;
-        this.logged_in = false;
+        this.logged_in = null;
+        this.transcript = null;
     }
 
     public void run() {
@@ -107,14 +110,28 @@ class HandleAClient implements Runnable, chat.ChatConstants {
                   try {
                       handle = inputFromClient.readLine();
                       String password = inputFromClient.readLine();
-                      forum = MysqlQueryBattery.pullForumByForumName(inputFromClient.readLine());
+                      String requested  = inputFromClient.readLine();
+                      forum = MysqlQueryBattery.pullForumByForumName(requested);
+                      if (forum.isEmpty()) {
+                          this.logged_in = connection_code.FORUM_FAIL;
+                          textArea.appendText(handle + " denied connecting to forum: " + requested + ", BAD FORUM\n");
+                          break;
+                      }
+                      this.transcript = TranscriptMap.getTranscript(forum.get("forum_name"));
+
                       String msg = " successfully connecting to " + forum.get("forum_name") + "!\n";
-                      this.logged_in = MysqlQueryBattery.tryLogin(handle, password);
+                      boolean success = MysqlQueryBattery.tryLogin(handle, password);
+                      if(success) {
+                          this.logged_in = connection_code.SUCCESS;
+                      }
+                      else {
+                          this.logged_in = connection_code.CRED_FAIL;
+                      }
                       Platform.runLater( () -> {
-                          if (this.logged_in) {
-                              textArea.appendText("Client # " + this.clientNo + " (" + handle + ") " + msg);
+                          if (this.logged_in == connection_code.SUCCESS) {
+                              textArea.appendText("Client #" + this.clientNo + " (" + handle + ") " + msg);
                           } else {
-                              textArea.appendText("refused connection request to username: " + handle + "\n");
+                              textArea.appendText("Refused connection request to Forum: " + forum.get("forum_name") + " for username: " + handle + ", BAD CREDENTIALS\n");
                           }
                       });
                   }
@@ -124,14 +141,21 @@ class HandleAClient implements Runnable, chat.ChatConstants {
                   break;
               }
               case GET_HANDLE: {
-                  if (this.logged_in) {
-                      transcript.addComment(handle + " successfully connecting to " + forum.get("forum_name") + "!\n");
-                      outputToClient.println("0");
+                  switch (this.logged_in) {
+                      case SUCCESS:
+                          transcript.addComment(handle + " successfully connecting to forum " + forum.get("forum_name") + "!\n");
+                          outputToClient.println("0");
+                          outputToClient.flush();
+                          break;
+                      case FORUM_FAIL:
+                          outputToClient.println("-1");
+                          outputToClient.flush();
+                          break;
+                      case CRED_FAIL:
+                          outputToClient.println("-2");
+                          outputToClient.flush();
+                          break;
                   }
-                  else {
-                      outputToClient.println("-1");
-                  }
-                  outputToClient.flush();
                   break;
               }
               case SEND_COMMENT: {
@@ -155,13 +179,13 @@ class HandleAClient implements Runnable, chat.ChatConstants {
         }
       }
       catch(NumberFormatException ex) {
-          String disconnectMsg = "Client #" + this.clientNo + " (" + handle + ") has disconnected\n";
-          transcript.addComment(disconnectMsg);
+          String disconnectMsg = "Client #" + this.clientNo + " (" + handle + ") has disconnected from forum " + forum.get("forum_name") + "\n";
+          transcript.addComment(handle + " has disconnected\n");
           Platform.runLater(()->textArea.appendText(disconnectMsg));
       }
       catch(Exception ex) {
           ex.printStackTrace();
-          Platform.runLater(()->textArea.appendText("Exception in client thread: " + ex.toString() + "\n"));
+          Platform.runLater(()->textArea.appendText("Forum: " + forum.get("forum_name") + ", Exception in client thread: " + ex.toString() + "\n"));
       }
     }
   }

@@ -32,6 +32,17 @@ public class ChatGateway implements chat.ChatConstants {
             Platform.runLater(() -> textArea.appendText("Exception in gateway constructor: " + ex.toString() + "\n"));
         }
     }
+    //start interaction with an alive? request
+    public boolean ping() {
+        try {
+            outputToServer.println("0");
+            outputToServer.flush();
+        }
+        catch (NullPointerException ex) {
+            return false;
+        }
+        return true;
+    }
 
     // Start the chat by sending in the user's handle.
     public void sendHandle(String username, String password, String forum) {
@@ -42,19 +53,18 @@ public class ChatGateway implements chat.ChatConstants {
         outputToServer.flush();
     }
 
-    public boolean getHandle() {
+    public int getHandle() {
         outputToServer.println(GET_HANDLE);
         outputToServer.flush();
+        int result_code = -2;
         try{
             String res = inputFromServer.readLine();
-            if (Integer.parseInt(res) < 0) {
-                return false;
-            }
+            result_code = Integer.parseInt(res);
         }
         catch (IOException ex) {
-            Platform.runLater(() -> textArea.appendText("Error in getCommentCount: " + ex.toString() + "\n"));
+            Platform.runLater(() -> textArea.appendText("Error in getHandle: " + ex.toString() + "\n"));
         }
-        return true;
+        return result_code;
     }
 
     // Send a new comment to the server.

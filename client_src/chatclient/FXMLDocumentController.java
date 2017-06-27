@@ -25,10 +25,13 @@ import javafx.util.Pair;
  */
 public class FXMLDocumentController implements Initializable {
     private ChatGateway gateway;
+
     @FXML
     private TextArea textArea;
     @FXML
     private TextField comment;
+    @FXML
+    private Button send;
            
     
     @FXML
@@ -47,37 +50,34 @@ public class FXMLDocumentController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         this.textArea.setEditable(false);
+        this.send.setDefaultButton(true);
         gateway = new ChatGateway(textArea);
 
-//        // Put up a dialog to get a handle from the user
-//        TextInputDialog user_dialog = new TextInputDialog();
-//        user_dialog.setTitle("Choose A Handle");
-//        user_dialog.setHeaderText(null);
-//        user_dialog.setContentText("Enter a handle:");
-//
-//        Optional<String> result = user_dialog.showAndWait();
-//        result.ifPresent(name -> gateway.sendHandle(name));
-//
-//        TextInputDialog target_dialog = new TextInputDialog();
-//        target_dialog.setTitle("Select A Forum");
-//        target_dialog.setHeaderText(null);
-//        target_dialog.setContentText("Enter a target forum:");
-//
-//        Optional<String> forum = target_dialog.showAndWait();
-//        forum.ifPresent(target -> gateway.sendForum(target));
-
+        if (!gateway.ping()) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Server Error");
+            alert.setHeaderText("Internal Server Error");
+            alert.setContentText("The server cannot be reached now please try again, or contact admin");
+            alert.showAndWait();
+            System.exit(0);
+        }
 
         // Create the custom dialog.
         Dialog<Pair<String, String>> dialog = new Dialog<>();
         dialog.setTitle("Login Dialog");
         dialog.setHeaderText("Login");
 
+//        dialog.setOnCloseRequest(
+//                event -> System.exit(0)
+//        );
+
 //        // Set the icon (must be included in the project).
 //        dialog.setGraphic(new ImageView(this.getClass().getResource("login.png").toString()));
 
         // Set the button types.
         ButtonType loginButtonType = new ButtonType("Login", ButtonBar.ButtonData.OK_DONE);
-        dialog.getDialogPane().getButtonTypes().addAll(loginButtonType, ButtonType.CANCEL);
+        ButtonType cancelButtonType = new ButtonType("cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+        dialog.getDialogPane().getButtonTypes().addAll(loginButtonType, cancelButtonType);
 
         // Create the username and password labels and fields.
         GridPane grid = new GridPane();
@@ -118,6 +118,9 @@ public class FXMLDocumentController implements Initializable {
             if (dialogButton == loginButtonType) {
                 return new Pair<>(username.getText(), password.getText());
             }
+            if (dialogButton == cancelButtonType) {
+                System.exit(0);
+            }
             return null;
         });
 
@@ -128,9 +131,30 @@ public class FXMLDocumentController implements Initializable {
             res.ifPresent(usernamePassword -> {
                 gateway.sendHandle(usernamePassword.getKey(), usernamePassword.getValue(), forum.getText());
             });
-            succesfulLogin = gateway.getHandle();
+            int result = gateway.getHandle();
+            String message = "";
+            switch(result) {
+                case -2:
+                    message = "Wrong username or password. Try again.";
+                    break;
+                case -1:
+                    message = "Invalid forum: '" + forum.getText() + "'. Try again.";
+                    break;
+                case 0:
+                    succesfulLogin = true;
+                    break;
+            }
+            if (!succesfulLogin) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Login Error");
+                alert.setHeaderText("There Was A Problem Logging In");
+                alert.setContentText(message);
+                alert.showAndWait();
+            }
         }
         while(!succesfulLogin);
+
+        ChatClient.setTitle(username.getText() + "'s Session");
 
         // Start the transcript check thread
         new Thread(new TranscriptCheck(gateway,textArea)).start();
@@ -151,7 +175,8 @@ class TranscriptCheck implements Runnable, chat.ChatConstants {
 
     /** Run a thread */
     public void run() {
-      while(true) {
+
+        while(true) {
           if (gateway.getCommentCount() > N) {
               String newComment = gateway.getComment(N);
               Platform.runLater(() -> textArea.appendText(newComment + "\n"));
@@ -162,6 +187,6 @@ class TranscriptCheck implements Runnable, chat.ChatConstants {
               }
               catch (InterruptedException ex) {}
           }
-      }
+        }
     }
   }

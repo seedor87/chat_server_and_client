@@ -11,17 +11,25 @@ import javafx.stage.Stage;
  * @author Joe Gregg
  */
 public class ChatClient extends Application {
+
+    private static String title = "Temp Title";
+    private static Stage clientStage;
     
     @Override
     public void start(Stage stage) throws Exception {
+        clientStage = stage;
         Parent root = FXMLLoader.load(getClass().getResource("FXMLDocument.fxml"));
         
         Scene scene = new Scene(root);
-        
-        stage.setScene(scene);
-        stage.setTitle("Chat Client");
-        stage.setOnCloseRequest(event->System.exit(0));
-        stage.show();
+
+        clientStage.setScene(scene);
+        clientStage.setTitle(title);
+        clientStage.setOnCloseRequest(event->System.exit(0));
+        clientStage.show();
+    }
+
+    public static void setTitle(String newTitle) {
+        title = newTitle;
     }
 
     /**

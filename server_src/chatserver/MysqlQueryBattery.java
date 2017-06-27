@@ -56,6 +56,28 @@ public class MysqlQueryBattery {
         return false;
     }
 
+    public static ArrayList pullAllForums() {
+        ArrayList ret = new ArrayList<HashMap>();
+        if(verifyConnection()) {
+            try {
+                String query = String.format("select * from %s.Forums", DB_TABLE);
+                result_set = statement.executeQuery(query);
+
+                while (result_set.next()) {
+                    HashMap map = new HashMap();
+                    for (String key : forum_keys) {
+                        map.put(key, result_set.getString(key));
+                    }
+                    ret.add(map);
+                }
+            }
+            catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return ret;
+    }
+
     public static HashMap<String, String> pullUser(String Username) {
         HashMap ret = new HashMap<String, String>();
         if(verifyConnection()) {
