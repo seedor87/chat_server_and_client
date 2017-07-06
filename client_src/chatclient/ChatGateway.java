@@ -6,21 +6,34 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import javafx.application.Platform;
-import javafx.scene.control.TextArea;
+import javafx.geometry.Insets;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class ChatGateway implements chat.ChatConstants {
 
+    private static final int PORT_NUMBER = 8000;
     private PrintWriter outputToServer;
     private BufferedReader inputFromServer;
-    private TextArea textArea;
-    private boolean success;
+    private ScrollPane scrollPane;
+    private TextFlow textFlow;
 
     // Establish the connection to the server.
-    public ChatGateway(TextArea textArea) {
-        this.textArea = textArea;
+    public ChatGateway(TextFlow textFlow, ScrollPane scrollPane) {
+
+        this.scrollPane = scrollPane;
+        this.scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        this.textFlow = textFlow;
+
+        this.textFlow.setPadding(new Insets(10));
+
         try {
             // Create a socket to connect to the server
-            Socket socket = new Socket("localhost", 8000);
+            Socket socket = new Socket("localhost", PORT_NUMBER);
 
             // Create an output stream to send data to the server
             outputToServer = new PrintWriter(socket.getOutputStream());
@@ -29,7 +42,10 @@ public class ChatGateway implements chat.ChatConstants {
             inputFromServer = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
         } catch (IOException ex) {
-            Platform.runLater(() -> textArea.appendText("Exception in gateway constructor: " + ex.toString() + "\n"));
+            Platform.runLater(() -> {
+                textFlow.getChildren().add(new Text("Exception in gateway constructor: " + ex.toString() + "\n"));
+                scrollPane.setVvalue(1.0);
+            });
         }
     }
     //start interaction with an alive? request
@@ -45,16 +61,16 @@ public class ChatGateway implements chat.ChatConstants {
     }
 
     // Start the chat by sending in the user's handle.
-    public void sendHandle(String username, String password, String forum) {
-        outputToServer.println(SEND_HANDLE);
+    public void sendLogin(String username, String password, String forum) {
+        outputToServer.println(SEND_LOGIN);
         outputToServer.println(username);
         outputToServer.println(password);
         outputToServer.println(forum);
         outputToServer.flush();
     }
 
-    public int getHandle() {
-        outputToServer.println(GET_HANDLE);
+    public int getLogin() {
+        outputToServer.println(GET_LOGIN);
         outputToServer.flush();
         int result_code = -2;
         try{
@@ -62,7 +78,10 @@ public class ChatGateway implements chat.ChatConstants {
             result_code = Integer.parseInt(res);
         }
         catch (IOException ex) {
-            Platform.runLater(() -> textArea.appendText("Error in getHandle: " + ex.toString() + "\n"));
+            Platform.runLater(() -> {
+                textFlow.getChildren().add(new Text("Error in getLogin: " + ex.toString() + "\n"));
+                scrollPane.setVvalue(1.0);
+            });
         }
         return result_code;
     }
@@ -74,9 +93,16 @@ public class ChatGateway implements chat.ChatConstants {
         outputToServer.flush();
     }
 
+    public void sendFile(String path) {
+        outputToServer.println(SEND_FILE);
+        outputToServer.println(path);
+        outputToServer.flush();
+    }
+
     // Ask the server to send us a count of how many comments are
     // currently in the transcript.
     public int getCommentCount() {
+
         outputToServer.println(GET_COMMENT_COUNT);
         outputToServer.flush();
         String res = null;
@@ -88,13 +114,16 @@ public class ChatGateway implements chat.ChatConstants {
                 return 0;
             }
         } catch (IOException ex) {
-            Platform.runLater(() -> textArea.appendText("Error in getCommentCount: " + ex.toString() + "\n"));
+            Platform.runLater(() -> {
+                textFlow.getChildren().add(new Text("Error in getCommentCount: " + ex.toString() + "\n"));
+                scrollPane.setVvalue(1.0);
+            });
         }
         catch (NumberFormatException ex) {
             try {
                 // throw out response for now
                 inputFromServer.readLine();
-//                textArea.appendText(res);
+//                textFlow.appendText(res);
             }
             catch (IOException exc) {
                 exc.printStackTrace();
@@ -104,16 +133,25 @@ public class ChatGateway implements chat.ChatConstants {
     }
 
     // Fetch comment n of the transcript from the server.
-    public String getComment(int n) {
+    public JSONObject getComment(int n) {
         outputToServer.println(GET_COMMENT);
         outputToServer.println(n);
         outputToServer.flush();
-        String comment = "";
         try {
-            comment = inputFromServer.readLine();
+            String message = inputFromServer.readLine();
+            final JSONObject obj = new JSONObject(message);
+            return obj;
         } catch (IOException ex) {
-            Platform.runLater(() -> textArea.appendText("Error in getComment: " + ex.toString() + "\n"));
+            Platform.runLater(() -> {
+                textFlow.getChildren().add(new Text("Error in getComment: " + ex.toString() + "\n"));
+                scrollPane.setVvalue(1.0);
+            });
+        } catch (JSONException ex) {
+            Platform.runLater(() -> {
+                textFlow.getChildren().add(new Text("Error in getComment: " + ex.toString() + "\n"));
+                scrollPane.setVvalue(1.0);
+            });
         }
-        return comment;
+        return new JSONObject();
     }
 }
