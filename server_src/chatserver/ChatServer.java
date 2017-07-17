@@ -7,8 +7,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 /**
- *
- * @author Joe Gregg
+ * This file is the class that stores the instance of the server session created on startup.
  */
 public class ChatServer extends Application {
     
@@ -20,14 +19,14 @@ public class ChatServer extends Application {
         
         stage.setScene(scene);
         stage.setTitle("Chat Server");
-        // Closing the main window does is not sufficient to completely kill
-        // the application, since we are going to be running a server thread.
-        // Calling System.exit() should do the trick.
+
         stage.setOnCloseRequest(event->System.exit(0));
         stage.show();
     }
 
     /**
+     * Main method to start the server
+     *
      * @param args the command line arguments
      */
     public static void main(String[] args) {

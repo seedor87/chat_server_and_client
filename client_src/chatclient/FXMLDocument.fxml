@@ -6,30 +6,46 @@
 <?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-
 <?import javafx.scene.text.Font?>
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="chatclient.FXMLDocumentController">
+<?import javafx.scene.text.TextFlow?>
+
+<BorderPane fx:id="borderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="chatclient.FXMLDocumentController">
+
+   <top>
+      <MenuBar fx:id="menuBar" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity">
+         <Menu items="" text="File">
+         </Menu>
+      </MenuBar>
+   </top>
+
    <center>
-      <ScrollPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-         <content>
-            <TextArea fx:id="textArea" prefHeight="358.0" prefWidth="600.0" />
-         </content>
-      </ScrollPane>
+      <VBox prefWidth="200.0" BorderPane.alignment="CENTER_LEFT">
+         <children>
+            <ScrollPane fx:id= "scrollPane" prefHeight="400.0" prefWidth="200.0" BorderPane.alignment="TOP_CENTER">
+               <content>
+                  <TextFlow fx:id="textFlow" />
+               </content>
+            </ScrollPane>
+         </children>
+         <VBox.margin>
+            <Insets top="5.0" bottom="5.0"/>
+         </VBox.margin>
+      </VBox>
+
    </center>
+
    <bottom>
       <HBox prefWidth="200.0" BorderPane.alignment="CENTER_LEFT">
          <children>
-            <TextField fx:id="comment" prefHeight="26.0" prefWidth="440.0">
-               <HBox.margin>
-                  <Insets right="10.0" />
-               </HBox.margin>
-               <font>
-                  <Font name="System Bold" size="14.0" />
-               </font>
+            <TextField fx:id="textComment" prefHeight="26.0" prefWidth="400.0">
             </TextField>
-            <Button fx:id="send" mnemonicParsing="false" onAction="#sendComment" text="Send" />
-            <Button mnemonicParsing="false" onAction="#pushedButton" text="¯\_(ツ)_/¯" />
+            <Button fx:id="sendComment" mnemonicParsing="false" onAction="#sendComment" text="Send Comment" />
+            <Button fx:id="sendFile" mnemonicParsing="false" onAction="#sendFile" text="Send File" />
          </children>
+         <HBox.margin>
+            <Insets top="5.0" bottom="5.0"/>
+         </HBox.margin>
       </HBox>
    </bottom>
+
 </BorderPane>

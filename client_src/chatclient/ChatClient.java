@@ -7,8 +7,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 /**
- *
- * @author Joe Gregg
+ * This file is the class that stores the instance of the client session created on startup.
  */
 public class ChatClient extends Application {
 
@@ -17,8 +16,12 @@ public class ChatClient extends Application {
     
     @Override
     public void start(Stage stage) throws Exception {
+        /**
+         * The main method that runs on startup.
+         * clientStage inherits the default JavaFX stage from the parent, Application class.
+         */
         clientStage = stage;
-        Parent root = FXMLLoader.load(getClass().getResource("FXMLDocument.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("FXMLDocument.fxml")); // load the associated fxml file to render chat session.
         
         Scene scene = new Scene(root);
 

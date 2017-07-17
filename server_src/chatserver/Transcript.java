@@ -10,14 +10,14 @@ public class Transcript {
     private List<Message> transcript = Collections.synchronizedList(new ArrayList<Message>());
     
     public Transcript() {
-        transcript.add(0, new Message("Beginning Threaded Transcript"));
+        transcript.add(0, new Message("", "debug", "Beginning Threaded Transcript", DateTimeUtils.getCurrentTimeStamp()));
     }
     
-    public void addComment(String comment) { transcript.add(new Message(comment)); }
+    public void addComment(String own, String type, String body, String date_time) { transcript.add(new Message(own, type, body, date_time)); }
 
     public int getSize() { return transcript.size(); }
 
-    public String getComment(int n) { return transcript.get(n).getBody(); }
+    public String getComment(int n) { return transcript.get(n).toString(); }
 
     public String toString() {
         String ret = "";
