@@ -1,4 +1,4 @@
-package chat;
+package chatserver;
 
 /**
  * This file holds the constants thate represent the signal codes that the client and the server agree to follow

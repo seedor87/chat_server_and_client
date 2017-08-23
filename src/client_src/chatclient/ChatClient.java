@@ -21,7 +21,7 @@ public class ChatClient extends Application {
          * clientStage inherits the default JavaFX stage from the parent, Application class.
          */
         clientStage = stage;
-        Parent root = FXMLLoader.load(getClass().getResource("FXMLDocument.fxml")); // load the associated fxml file to render chat session.
+        Parent root = FXMLLoader.load(getClass().getResource("ClientFXMLDocument.fxml")); // load the associated fxml file to render chat session.
         
         Scene scene = new Scene(root);
 

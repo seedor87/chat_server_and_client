@@ -12,12 +12,9 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.LinkOption;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 
+import chatserver.ChatConstants;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -26,7 +23,7 @@ import javafx.scene.control.TextArea;
 /**
  * This class responds to user interaction and governs the server database interaction and interaction with clients in accordance with request codes sent from the client.
  */
-public class FXMLDocumentController implements Initializable {
+public class ServerFXMLDocumentController implements Initializable {
 
     private int clientNo = 0;                   // field that tracks the client-independent id of the clients that request access.
     private TranscriptMap transcriptMap;        // the transcript map that stores the state of the messages keyed by their forum while the server is active.
@@ -74,7 +71,7 @@ public class FXMLDocumentController implements Initializable {
  * each thread that is run has cases that correspond to the appropriate response for the request code.
  * The client side interface is in TranscriptCheck.java, for more info
  */
-class HandleAClient implements Runnable, chat.ChatConstants {
+class HandleAClient implements Runnable, ChatConstants {
 
     private Socket socket;                  // A connected socket
     private Transcript transcript;          // Reference to forum specific transcript, taken from transcript map

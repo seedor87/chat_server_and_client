@@ -20,7 +20,7 @@ import org.json.JSONObject;
  * Each method represents an action taken by the client. The methods are each binary in implementation; each action requires a request for action followed by an execution of that action.
  * An example: the client sends a sendLogin action to send credentials to the server for vetting, and then reacts based on the result of the following getLogin. This reaction will either permit the client session to exist or deny it.
  */
-public class ChatGateway implements chat.ChatConstants {
+public class ChatGateway implements ChatConstants {
 
     private static final int PORT_NUMBER = 8000;
     private PrintWriter outputToServer;

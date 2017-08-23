@@ -39,9 +39,9 @@ import org.json.JSONObject;
 /**
  * This class responds to user interaction and governs the client session UI in accordance with response codes sent from the server.
  */
-public class FXMLDocumentController implements Initializable {
+public class ClientFXMLDocumentController implements Initializable {
 
-    private ChatGateway gateway;
+    private chatclient.ChatGateway gateway;
     private FileChooser fileChooser;
 
     private static BorderPane bp;
@@ -215,7 +215,7 @@ public class FXMLDocumentController implements Initializable {
  * The way they are posted depends on the message type, there are two different cases right now.
  * The server side interface is in file HandleClient.java, for more info.
  */
-class TranscriptCheck implements Runnable, chat.ChatConstants {
+class TranscriptCheck implements Runnable, ChatConstants {
     private final String IMAGE_PATH = "file:/Users/robertseedorf/IdeaProjects/chat_client/src/chatclient/ASRCFH.png";
 
     private ChatGateway gateway; // Gateway to the server
