@@ -2,6 +2,8 @@ package chatclient;
 
 import javafx.event.EventHandler;
 import javafx.scene.Node;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.MouseButton;
@@ -16,6 +18,7 @@ import javafx.stage.Stage;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Optional;
 
 /**
  * The message manufacturer makes arrayLists of JavaFX Text instances that are loaded into the textFlow of the UI.
@@ -49,7 +52,7 @@ public class MessageManufacturer {
      * Custom event handler that simulates hyperlink to allow special action on click.
      * In this case we open a file chooser dialogue to the location of the file's immediate parent directory over the current stage.
      */
-    private static EventHandler access = new EventHandler<MouseEvent>() {
+    private static EventHandler enact = new EventHandler<MouseEvent>() {
         @Override public void handle(MouseEvent e) {
             Text source = (Text) e.getSource();
             source.setFill(Color.MEDIUMPURPLE);
@@ -57,6 +60,29 @@ public class MessageManufacturer {
             FileChooser fc = new FileChooser();
             fc.setInitialDirectory(initDir);
             fc.showOpenDialog(new Stage());
+        }
+    };
+
+    private static EventHandler activate = new EventHandler<MouseEvent>() {
+        @Override public void handle(MouseEvent e) {
+            Text source = (Text) e.getSource();
+            source.setFill(Color.MEDIUMPURPLE);
+            File initDir = new File(new File(source.getText()).getParentFile().getAbsolutePath());
+            FileChooser fc = new FileChooser();
+            fc.setInitialDirectory(initDir);
+
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Openeing Jnote File");
+            alert.setHeaderText("You Have Chosen a File With The Extension .jnote");
+            alert.setContentText("Now Opening Java Annotation Program.\nProceed?");
+
+            Optional<ButtonType> result = alert.showAndWait();
+            if(result.get() == ButtonType.OK) {
+                fc.showOpenDialog(new Stage());
+            } else {
+                return;
+            }
+
         }
     };
 
@@ -111,7 +137,11 @@ public class MessageManufacturer {
         ret.add(new Text(new String(new char[25 - ownerText.getText().length()]).replace('\0', ' ')));
 
         if (typeString.contains("file")) {
-            bodyText.addEventHandler(MouseEvent.MOUSE_CLICKED, access);
+            bodyText.addEventHandler(MouseEvent.MOUSE_CLICKED, enact);
+            bodyText.setFill(Color.DARKBLUE);
+        }
+        else if (typeString.contains("jnote")) {
+            bodyText.addEventHandler(MouseEvent.MOUSE_CLICKED, activate);
             bodyText.setFill(Color.DARKBLUE);
         }
 

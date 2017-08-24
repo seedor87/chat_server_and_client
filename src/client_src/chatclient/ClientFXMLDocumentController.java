@@ -86,22 +86,24 @@ public class ClientFXMLDocumentController implements Initializable {
         gateway = new ChatGateway(textFlow, scrollPane);
 
         fileChooser = new FileChooser();
+        FileChooser.ExtensionFilter extFilterJnote = new FileChooser.ExtensionFilter("JNOTE files (*.jnote)", "*.zip");
+        FileChooser.ExtensionFilter extFilterZip = new FileChooser.ExtensionFilter("ZIP files (*.zip)", "*.zip");
         FileChooser.ExtensionFilter extFilterDoc = new FileChooser.ExtensionFilter("DOCX files (*.docx)", "*.docx");
         FileChooser.ExtensionFilter extFilterTxt = new FileChooser.ExtensionFilter("TXT files (*.txt)", "*.txt");
+        fileChooser.getExtensionFilters().add(extFilterJnote);
+        fileChooser.getExtensionFilters().add(extFilterZip);
         fileChooser.getExtensionFilters().add(extFilterDoc);
         fileChooser.getExtensionFilters().add(extFilterTxt);
 
-        BooleanBinding bb = new BooleanBinding() {
-            {
-                super.bind(textComment.textProperty());
-            }
-
-            @Override
-            protected boolean computeValue() {
-                return (textComment.getText().isEmpty());
-            }
-        };
-        sendComment.disableProperty().bind(bb);
+        sendComment.disableProperty().bind(
+                new BooleanBinding() {
+                    { super.bind(textComment.textProperty()); }
+                    @Override
+                    protected boolean computeValue() {
+                        return (textComment.getText().isEmpty());
+                    }
+                }
+        );
 
         if (!gateway.sendPing()) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
