@@ -63,6 +63,9 @@ public class MessageManufacturer {
         }
     };
 
+    /**
+     * Custom event handler for action specific to the extension .jnote, for our own java annotate files
+     */
     private static EventHandler activate = new EventHandler<MouseEvent>() {
         @Override public void handle(MouseEvent e) {
             Text source = (Text) e.getSource();
@@ -78,7 +81,8 @@ public class MessageManufacturer {
 
             Optional<ButtonType> result = alert.showAndWait();
             if(result.get() == ButtonType.OK) {
-                fc.showOpenDialog(new Stage());
+                File file = fc.showOpenDialog(new Stage());
+                System.out.println(file.canExecute());
             } else {
                 return;
             }
@@ -137,11 +141,11 @@ public class MessageManufacturer {
         ret.add(new Text(new String(new char[25 - ownerText.getText().length()]).replace('\0', ' ')));
 
         if (typeString.contains("file")) {
-            bodyText.addEventHandler(MouseEvent.MOUSE_CLICKED, enact);
-            bodyText.setFill(Color.DARKBLUE);
-        }
-        else if (typeString.contains("jnote")) {
-            bodyText.addEventHandler(MouseEvent.MOUSE_CLICKED, activate);
+            if(bodyString.contains(".jnote")) {
+                bodyText.addEventHandler(MouseEvent.MOUSE_CLICKED, activate);
+            } else {
+                bodyText.addEventHandler(MouseEvent.MOUSE_CLICKED, enact);
+            }
             bodyText.setFill(Color.DARKBLUE);
         }
 
