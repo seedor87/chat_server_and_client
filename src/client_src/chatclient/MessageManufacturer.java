@@ -16,10 +16,9 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import third_party_src.Something;
+import scratchpad_project.annotationtool.annotation.FXAnnotationToolBuilder;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Optional;
 
@@ -92,7 +91,11 @@ public class MessageManufacturer {
 
                 Platform.runLater(new Runnable() {
                     public void run() {
-                        new Something().start(new Stage());
+                        try {
+                            new FXAnnotationToolBuilder().start(new Stage());
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
                     }
                 });
 
