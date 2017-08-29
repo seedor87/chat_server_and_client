@@ -263,8 +263,8 @@ class TranscriptCheck implements Runnable, ChatConstants {
                     textFlow.getChildren().addAll(MessageManufacturer.Manufacture(ownerString, dateString, typeString, bodyString));
                 });
                 scrollPane.setVvalue(scrollPane.getVmax());
-
                 N++;
+
             } else if (index < 1) { // If the server is gone, for any reason, the value for index is no good so we break and tell user.
                 break;
             } else { // Every 1/4 second retry for new posts.

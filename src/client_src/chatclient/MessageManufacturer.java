@@ -1,5 +1,6 @@
 package chatclient;
 
+import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
@@ -15,10 +16,13 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import third_party_src.Something;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Optional;
+
 
 /**
  * The message manufacturer makes arrayLists of JavaFX Text instances that are loaded into the textFlow of the UI.
@@ -70,9 +74,6 @@ public class MessageManufacturer {
         @Override public void handle(MouseEvent e) {
             Text source = (Text) e.getSource();
             source.setFill(Color.MEDIUMPURPLE);
-            File initDir = new File(new File(source.getText()).getParentFile().getAbsolutePath());
-            FileChooser fc = new FileChooser();
-            fc.setInitialDirectory(initDir);
 
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Openeing Jnote File");
@@ -81,8 +82,20 @@ public class MessageManufacturer {
 
             Optional<ButtonType> result = alert.showAndWait();
             if(result.get() == ButtonType.OK) {
-                File file = fc.showOpenDialog(new Stage());
-                System.out.println(file.canExecute());
+
+//                try {
+//                    Process p = Runtime.getRuntime().exec("javac C:\\Users\\Bob S\\IdeaProjects\\chat_server_and_client\\src\\client_src\\third_party_src\\Something.java");
+//                    Process p2 = Runtime.getRuntime().exec("java C:\\Users\\Bob S\\IdeaProjects\\chat_server_and_client\\out\\production\\chat_server_and_client\\third_party_src\\Something");
+//                }catch (IOException ex) {
+//                    ex.printStackTrace();
+//                }
+
+                Platform.runLater(new Runnable() {
+                    public void run() {
+                        new Something().start(new Stage());
+                    }
+                });
+
             } else {
                 return;
             }

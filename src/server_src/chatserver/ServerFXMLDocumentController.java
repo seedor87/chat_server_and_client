@@ -11,6 +11,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.URL;
 import java.util.*;
 
@@ -188,6 +189,9 @@ class HandleAClient implements Runnable, ChatConstants {
               }
             }
           }
+            catch (SocketException ex) {
+                System.err.printf(ex.toString());
+            }
           catch(NumberFormatException ex) { // In the event the client disconnects, the malformed request code is interpreted as client terminated connection
               String disconnectMsg = "Client #" + this.clientNo + " (" + handle + ") has disconnected from forum " + forum.get("forum_name") + "\n";
               MysqlQueryBattery.pushMessage("Server", "debug", handle + " has disconnected\n", forum.get("ForumID"));
@@ -198,5 +202,6 @@ class HandleAClient implements Runnable, ChatConstants {
               ex.printStackTrace();
               Platform.runLater(()->textArea.appendText("Forum: " + forum.get("forum_name") + ", Exception in client thread: " + ex.toString() + "\n"));
           }
+
         }
   }
