@@ -16,9 +16,12 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import scratchpad_project.annotationtool.annotation.FXAnnotationToolBuilder;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Optional;
 
@@ -81,24 +84,16 @@ public class MessageManufacturer {
 
             Optional<ButtonType> result = alert.showAndWait();
             if(result.get() == ButtonType.OK) {
-
-//                try {
-//                    Process p = Runtime.getRuntime().exec("javac C:\\Users\\Bob S\\IdeaProjects\\chat_server_and_client\\src\\client_src\\third_party_src\\Something.java");
-//                    Process p2 = Runtime.getRuntime().exec("java C:\\Users\\Bob S\\IdeaProjects\\chat_server_and_client\\out\\production\\chat_server_and_client\\third_party_src\\Something");
-//                }catch (IOException ex) {
-//                    ex.printStackTrace();
-//                }
-
-                Platform.runLater(new Runnable() {
-                    public void run() {
-                        try {
-                            new FXAnnotationToolBuilder().start(new Stage());
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
-                        }
-                    }
-                });
-
+            	String[] annotationArgs = new String[] {"xdg-open", source.getText().trim()};
+            	for(String arg : annotationArgs) {
+            		System.out.print(arg + " ");
+            	}
+            	try {
+					Process proc = new ProcessBuilder(annotationArgs).start();
+				} catch (IOException ioe) {
+					ioe.printStackTrace();
+				}
+            	
             } else {
                 return;
             }

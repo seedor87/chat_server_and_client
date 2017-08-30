@@ -86,7 +86,7 @@ public class ClientFXMLDocumentController implements Initializable {
         gateway = new ChatGateway(textFlow, scrollPane);
 
         fileChooser = new FileChooser();
-        FileChooser.ExtensionFilter extFilterJnote = new FileChooser.ExtensionFilter("JNOTE files (*.jnote)", "*.zip");
+        FileChooser.ExtensionFilter extFilterJnote = new FileChooser.ExtensionFilter("JNOTE files (*.jnote)", "*.jnote");
         FileChooser.ExtensionFilter extFilterZip = new FileChooser.ExtensionFilter("ZIP files (*.zip)", "*.zip");
         FileChooser.ExtensionFilter extFilterDoc = new FileChooser.ExtensionFilter("DOCX files (*.docx)", "*.docx");
         FileChooser.ExtensionFilter extFilterTxt = new FileChooser.ExtensionFilter("TXT files (*.txt)", "*.txt");
