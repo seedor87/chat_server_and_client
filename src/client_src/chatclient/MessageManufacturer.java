@@ -1,6 +1,5 @@
 package chatclient;
 
-import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
@@ -17,11 +16,8 @@ import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Optional;
 
@@ -77,27 +73,34 @@ public class MessageManufacturer {
             Text source = (Text) e.getSource();
             source.setFill(Color.MEDIUMPURPLE);
 
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Openeing Jnote File");
-            alert.setHeaderText("You Have Chosen a File With The Extension .jnote");
-            alert.setContentText("Now Opening Java Annotation Program.\nProceed?");
+            if(System.getProperty("os.name").equals("Linux")) {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Openeing Jnote File");
+                alert.setHeaderText("You Have Chosen a File With The Extension .jnote");
+                alert.setContentText("Now Opening Java Annotation Program.\nProceed?");
 
-            Optional<ButtonType> result = alert.showAndWait();
-            if(result.get() == ButtonType.OK) {
-            	String[] annotationArgs = new String[] {"xdg-open", source.getText().trim()};
-            	for(String arg : annotationArgs) {
-            		System.out.print(arg + " ");
-            	}
-            	try {
-					Process proc = new ProcessBuilder(annotationArgs).start();
-				} catch (IOException ioe) {
-					ioe.printStackTrace();
-				}
-            	
+                Optional<ButtonType> result = alert.showAndWait();
+                if(result.get() == ButtonType.OK) {
+                    String[] annotationArgs = new String[]{"xdg-open", source.getText().trim()};
+                    for (String arg : annotationArgs) {
+                        System.out.print(arg + " ");
+                    }
+                    try {
+                        Process proc = new ProcessBuilder(annotationArgs).start();
+                    } catch (IOException ioe) {
+                        System.out.println("test");
+                        ioe.printStackTrace();
+                    }
+                } else {
+                    return;
+                }
             } else {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Invlaid Configuration");
+                alert.setContentText("Cannot Open .jnote File From Here, try using Linux Instead");
+                alert.showAndWait();
                 return;
             }
-
         }
     };
 
