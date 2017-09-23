@@ -4,6 +4,8 @@ import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.MouseButton;
@@ -29,7 +31,8 @@ import java.util.Optional;
  */
 public class MessageManufacturer {
 
-    private static final String IMG_PATH = "/Users/robertseedorf/IdeaProjects/chat_client/src/chatclient/ASRCFH.png";
+    private static final String IMG_PATH = ".\\ASRCFH.png";
+
     final static Clipboard clipboard = Clipboard.getSystemClipboard();
     final static ClipboardContent content = new ClipboardContent();
 
@@ -54,7 +57,7 @@ public class MessageManufacturer {
      * Custom event handler that simulates hyperlink to allow special action on click.
      * In this case we open a file chooser dialogue to the location of the file's immediate parent directory over the current stage.
      */
-    private static EventHandler enact = new EventHandler<MouseEvent>() {
+    private static EventHandler activateElse = new EventHandler<MouseEvent>() {
         @Override public void handle(MouseEvent e) {
             Text source = (Text) e.getSource();
             source.setFill(Color.MEDIUMPURPLE);
@@ -68,7 +71,7 @@ public class MessageManufacturer {
     /**
      * Custom event handler for action specific to the extension .jnote, for our own java annotate files
      */
-    private static EventHandler activate = new EventHandler<MouseEvent>() {
+    private static EventHandler activateJnote = new EventHandler<MouseEvent>() {
         @Override public void handle(MouseEvent e) {
             Text source = (Text) e.getSource();
             source.setFill(Color.MEDIUMPURPLE);
@@ -131,6 +134,7 @@ public class MessageManufacturer {
         dateText.setFill(Color.DARKGOLDENROD);
         typeText.setFont(Font.font("Verdana", FontPosture.ITALIC, 14));
         bodyText.setFont(Font.font("Verdana", FontPosture.REGULAR, 16));
+        bodyText.setFont(Font.font("Verdana", FontPosture.REGULAR, 16));
 
         /**
          * NOTE:
@@ -156,14 +160,19 @@ public class MessageManufacturer {
 
         if (typeString.contains("file")) {
             if(bodyString.contains(".jnote")) {
-                bodyText.addEventHandler(MouseEvent.MOUSE_CLICKED, activate);
+                ImageView imview = new ImageView(new Image(IMG_PATH));
+                ret.add(new Text("\n"));
+                ret.add(imview);
+                ret.add(new Text("\n"));
+
+                bodyText.addEventHandler(MouseEvent.MOUSE_CLICKED, activateJnote);
             } else {
-                bodyText.addEventHandler(MouseEvent.MOUSE_CLICKED, enact);
+                bodyText.addEventHandler(MouseEvent.MOUSE_CLICKED, activateElse);
             }
             bodyText.setFill(Color.DARKBLUE);
         }
-
         ret.add(bodyText);
+
         ret.add(new Text("\n"));
         ret.add(new Text(System.lineSeparator()));
         ret.add(new Text(System.lineSeparator()));

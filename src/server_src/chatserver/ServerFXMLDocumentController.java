@@ -5,6 +5,11 @@
  */
 package chatserver;
 
+import javafx.application.Platform;
+import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.scene.control.TextArea;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -13,13 +18,9 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.URL;
-import java.util.*;
-
-import chatserver.ChatConstants;
-import javafx.application.Platform;
-import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
-import javafx.scene.control.TextArea;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.ResourceBundle;
 
 /**
  * This class responds to user interaction and governs the server database interaction and interaction with clients in accordance with request codes sent from the client.

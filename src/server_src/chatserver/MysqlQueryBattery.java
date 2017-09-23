@@ -1,12 +1,11 @@
 package chatserver;
 
-import chatserver.ConnectionManager;
+import javafx.scene.control.Alert;
 
 import javax.sql.DataSource;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.HashMap;
 
 /**
@@ -27,13 +26,25 @@ public class MysqlQueryBattery {
     private static Statement statement = null;
 
     /** Used every time a query is tried to make sure that the connection is established */
-    private static boolean verifyConnection() {
+    public static boolean verifyConnection() {
         try {
+//            String url = "jdbc:mysql://165.227.208.204:3306/java_chat";
+//            String user = "bob";
+//            String password = "password";
+//            Class.forName("com.mysql.jdbc.Driver").newInstance();
+//            connection = DriverManager.getConnection(url, user, password);
+
             connection = DATA_SOURCE.getConnection();
+
             statement = connection.createStatement();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+        } catch (Exception e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("ERROR");
+            alert.setHeaderText("Database Connection Error");
+            alert.setContentText("There has been an irrecoverable error connecting to the database." +
+                    "\nContact Admin or try again later");
+            alert.showAndWait();
+            System.exit(1);
         }
         return true;
     }
@@ -292,7 +303,7 @@ public class MysqlQueryBattery {
         if(verifyConnection()) {
             try {
                 String query = String.format("select * from %s.Users join %s.Members on %s.Users.Username = %s.Members.Username where %s.Members.ForumID = '%s'", DB_TABLE, DB_TABLE, DB_TABLE, DB_TABLE, DB_TABLE, forum_id);
-                print(query);
+                System.out.println(query);
                 result_set = statement.executeQuery(query);
 
                 while (result_set.next()) {
@@ -415,7 +426,6 @@ public class MysqlQueryBattery {
 //        print(pullUser("kakoue66"));
 //        print(pullForumByID("7d2c714b-5055-11e7-b552-0050569c1cce"));
 
-
         /*
         The following are the steps in order that are run when a new member is created,
         they enter a new forum with a specific member,
@@ -434,21 +444,5 @@ public class MysqlQueryBattery {
 //        print(pushMessage("bob", "text", "Hey Me!", id));
 
 //        print(pullMessagesByForumID(id));
-    }
-
-    /** Throw away method for less typing ;) */
-    public static void print(Object o) {
-        if(o instanceof ArrayList) {
-            System.out.print("[");
-            for(Object ob : (ArrayList) o) {
-                System.out.println(ob.toString());
-            }
-            System.out.print("]");
-            print("");
-        }
-        else {
-            System.out.println(o.toString());
-        }
-        System.out.println("");
     }
 }

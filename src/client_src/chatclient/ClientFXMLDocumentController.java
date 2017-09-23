@@ -5,36 +5,26 @@
  */
 package chatclient;
 
-import java.io.File;
-import java.io.InterruptedIOException;
-import java.net.SocketException;
-import java.net.URL;
-import java.util.Optional;
-import java.util.ResourceBundle;
-import java.util.concurrent.ExecutionException;
-
 import javafx.application.Platform;
 import javafx.beans.binding.BooleanBinding;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
-import javafx.geometry.Orientation;
 import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
-import javafx.scene.paint.Color;
-import javafx.scene.text.*;
-import javafx.scene.web.WebView;
-import javafx.stage.DirectoryChooser;
+import javafx.scene.text.TextFlow;
 import javafx.stage.FileChooser;
-import javafx.stage.Stage;
 import javafx.util.Pair;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.File;
+import java.net.URL;
+import java.util.Optional;
+import java.util.ResourceBundle;
 
 /**
  * This class responds to user interaction and governs the client session UI in accordance with response codes sent from the server.
@@ -43,9 +33,6 @@ public class ClientFXMLDocumentController implements Initializable {
 
     private chatclient.ChatGateway gateway;
     private FileChooser fileChooser;
-
-    private static BorderPane bp;
-    private static FileChooser fc;
 
     @FXML
     private BorderPane borderPane;
@@ -57,9 +44,6 @@ public class ClientFXMLDocumentController implements Initializable {
     private TextField textComment;
     @FXML
     private Button sendComment;
-    @FXML
-    private Button sendFile;
-           
     
     @FXML
     private void sendComment(ActionEvent event) {
@@ -81,8 +65,6 @@ public class ClientFXMLDocumentController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
 //        textFlow.setEditable(false);
         this.sendComment.setDefaultButton(true);
-        bp = borderPane;
-        fc = fileChooser;
         gateway = new ChatGateway(textFlow, scrollPane);
 
         fileChooser = new FileChooser();
@@ -218,7 +200,6 @@ public class ClientFXMLDocumentController implements Initializable {
  * The server side interface is in file HandleClient.java, for more info.
  */
 class TranscriptCheck implements Runnable, ChatConstants {
-    private final String IMAGE_PATH = "file:/Users/robertseedorf/IdeaProjects/chat_client/src/chatclient/ASRCFH.png";
 
     private ChatGateway gateway; // Gateway to the server
     private ScrollPane scrollPane;

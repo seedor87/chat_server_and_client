@@ -1,18 +1,17 @@
 package chatclient;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.Socket;
-
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
-import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
 
 /**
  * This class stores the tools that control the reaction of the client to response codes from the server.
@@ -177,17 +176,12 @@ public class ChatGateway implements ChatConstants {
             String message = inputFromServer.readLine();
             final JSONObject obj = new JSONObject(message);
             return obj;
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             Platform.runLater(() -> {
                 textFlow.getChildren().add(new Text("Error in getComment: " + ex.toString() + "\n"));
-                scrollPane.setVvalue(1.0);
-            });
-        } catch (JSONException ex) {
-            Platform.runLater(() -> {
-                textFlow.getChildren().add(new Text("Error in getComment: " + ex.toString() + "\n"));
-                scrollPane.setVvalue(1.0);
             });
         }
+        scrollPane.setVvalue(1.0);
         return new JSONObject();
     }
 }
