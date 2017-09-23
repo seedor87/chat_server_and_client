@@ -1,6 +1,8 @@
 package chatclient;
 
+import javafx.event.Event;
 import javafx.event.EventHandler;
+import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
@@ -73,8 +75,10 @@ public class MessageManufacturer {
      */
     private static EventHandler activateJnote = new EventHandler<MouseEvent>() {
         @Override public void handle(MouseEvent e) {
-            Text source = (Text) e.getSource();
-            source.setFill(Color.MEDIUMPURPLE);
+            Node source = (Node) e.getSource();
+            if(source instanceof Text) {
+                ((Text) source).setFill(Color.MEDIUMPURPLE);
+            }
 
             if(System.getProperty("os.name").equals("Linux")) {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -84,7 +88,12 @@ public class MessageManufacturer {
 
                 Optional<ButtonType> result = alert.showAndWait();
                 if(result.get() == ButtonType.OK) {
-                    String[] annotationArgs = new String[]{"xdg-open", source.getText().trim()};
+                    String[] annotationArgs;
+                    if(source instanceof Text) {
+                        annotationArgs = new String[]{"xdg-open", ((Text) source).getText().trim()};
+                    } else {
+                        annotationArgs = new String[]{"xdg-open", ((ImageView) source).getId().trim()};
+                    }
                     for (String arg : annotationArgs) {
                         System.out.print(arg + " ");
                     }
@@ -104,6 +113,12 @@ public class MessageManufacturer {
                 alert.showAndWait();
                 return;
             }
+        }
+    };
+
+    private static EventHandler setIconEvent = new EventHandler() {
+        @Override public void handle(Event e) {
+            ((Node) e.getSource()).setCursor(Cursor.HAND);
         }
     };
 
@@ -161,17 +176,17 @@ public class MessageManufacturer {
         if (typeString.contains("file")) {
             if(bodyString.contains(".jnote")) {
                 ImageView imview = new ImageView(new Image(IMG_PATH));
-                ret.add(new Text("\n"));
+                imview.addEventHandler(MouseEvent.MOUSE_ENTERED, setIconEvent);
+                imview.setId(bodyText.getText());
+                imview.addEventHandler(MouseEvent.MOUSE_CLICKED, activateJnote);
                 ret.add(imview);
-                ret.add(new Text("\n"));
-
-                bodyText.addEventHandler(MouseEvent.MOUSE_CLICKED, activateJnote);
             } else {
+                bodyText.addEventHandler(MouseEvent.MOUSE_ENTERED, setIconEvent);
                 bodyText.addEventHandler(MouseEvent.MOUSE_CLICKED, activateElse);
+                bodyText.setFill(Color.DARKBLUE);
+                ret.add(bodyText);
             }
-            bodyText.setFill(Color.DARKBLUE);
         }
-        ret.add(bodyText);
 
         ret.add(new Text("\n"));
         ret.add(new Text(System.lineSeparator()));
