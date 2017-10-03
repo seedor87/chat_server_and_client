@@ -33,7 +33,7 @@ import java.util.Optional;
  */
 public class MessageManufacturer {
 
-    private static final String IMG_PATH = ".\\ASRCFH.png";
+    private static final String IMG_PATH = "/home/armstr/git/chat_server_and_client/src/ASRCFH.png";
 
     final static Clipboard clipboard = Clipboard.getSystemClipboard();
     final static ClipboardContent content = new ClipboardContent();
@@ -175,7 +175,7 @@ public class MessageManufacturer {
 
         if (typeString.contains("file")) {
             if(bodyString.contains(".jnote")) {
-                ImageView imview = new ImageView(new Image(IMG_PATH));
+                ImageView imview = new ImageView("file:" + IMG_PATH);
                 imview.addEventHandler(MouseEvent.MOUSE_ENTERED, setIconEvent);
                 imview.setId(bodyText.getText());
                 imview.addEventHandler(MouseEvent.MOUSE_CLICKED, activateJnote);
