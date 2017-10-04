@@ -6,7 +6,6 @@ import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
@@ -33,7 +32,8 @@ import java.util.Optional;
  */
 public class MessageManufacturer {
 
-    private static final String IMG_PATH = "/home/armstr/git/chat_server_and_client/src/ASRCFH.png";
+    private static final String IMG_PATH = "/Users/robertseedorf/IdeaProjects/chat_server_and_client/src/ASRCFH.png";
+//    private static final String IMG_PATH = ".." + File.separatorChar + "ASRCFH.png";
 
     final static Clipboard clipboard = Clipboard.getSystemClipboard();
     final static ClipboardContent content = new ClipboardContent();
@@ -186,6 +186,8 @@ public class MessageManufacturer {
                 bodyText.setFill(Color.DARKBLUE);
                 ret.add(bodyText);
             }
+        } else {
+            ret.add(bodyText);
         }
 
         ret.add(new Text("\n"));
